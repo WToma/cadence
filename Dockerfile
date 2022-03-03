@@ -87,6 +87,10 @@ WORKDIR /etc/cadence
 ENV SERVICES="history,matching,frontend,worker"
 
 EXPOSE 7933 7934 7935 7939
+
+RUN adduser --system --no-create-home nonroot
+USER nonroot
+
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD /start-cadence.sh
 
@@ -98,6 +102,9 @@ RUN apk add --update --no-cache ca-certificates py3-pip mysql-client
 RUN pip3 install cqlsh && cqlsh --version
 
 COPY docker/start.sh /start.sh
+
+RUN adduser --system --no-create-home nonroot
+USER nonroot
 
 CMD /start.sh
 
@@ -123,6 +130,9 @@ FROM alpine AS cadence-bench
 
 COPY --from=builder /cadence/cadence-bench /usr/local/bin
 COPY --from=builder /cadence/cadence /usr/local/bin
+
+RUN adduser --system --no-create-home nonroot
+USER nonroot
 
 CMD ["/usr/local/bin/cadence-bench", "--root", "/etc/cadence-bench", "start"]
 
